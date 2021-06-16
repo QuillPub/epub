@@ -21,8 +21,8 @@ const MediaTypePackageFile = `application/oebps-package+xml`
 
 var ErrContentsPathNotFound = errors.New("contents path not found")
 
-func getContentsPath(zip *zip.ReadCloser) (string, error) {
-	file, err := openContainerFile(zip)
+func GetContentsPath(zip *zip.ReadCloser) (string, error) {
+	file, err := zip.Open("META-INF/container.xml")
 	if err != nil {
 		return "", err
 	}
@@ -37,10 +37,6 @@ func getContentsPath(zip *zip.ReadCloser) (string, error) {
 		return "", err
 	}
 	return extractContentsPath(container)
-}
-
-func openContainerFile(zip *zip.ReadCloser) (io.ReadCloser, error) {
-	return zip.Open("META-INF/container.xml")
 }
 
 func parseContainer(r io.Reader) (*Container, error) {
