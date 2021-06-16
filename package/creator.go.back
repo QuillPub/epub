@@ -1,0 +1,75 @@
+package epub
+
+import "encoding/xml"
+
+type Creator struct {
+	// Required
+	Text string
+
+	// Optional
+	ID   ID
+	Dir  Dir
+	Lang Lang
+}
+
+func (creator Creator) optionalAttributes() []optionalAttribute {
+	return []optionalAttribute{creator.Dir, creator.ID, creator.Lang}
+}
+
+func (creator *Creator) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case creator.ID.Name():
+			creator.ID = ID(attr.Value)
+		case creator.Dir.Name():
+			creator.Dir = Dir(attr.Value)
+		case creator.Lang.Name():
+			creator.Lang = Lang(attr.Value)
+		}
+	}
+
+	for {
+		token, err := d.Token()
+		if err != nil {
+			return err
+		}
+
+		switch el := token.(type) {
+		case xml.CharData:
+			creator.Text = string(el)
+		case xml.StartElement:
+		case xml.EndElement:
+			if el == start.End() {
+				return nil
+			}
+		}
+	}
+}
+
+func (creator Creator) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	if creator.Text == "" {
+		return nil
+	}
+	start.Name.Local = "dc:creator"
+	for _, attr := range creator.optionalAttributes() {
+		if attr.isSet() {
+			start.Attr = append(start.Attr, attr.toAttr())
+		}
+	}
+	err := e.EncodeToken(start)
+	if err != nil {
+		return err
+	}
+
+	err = e.EncodeToken(xml.CharData(creator.Text))
+	if err != nil {
+		return err
+	}
+
+	err = e.EncodeToken(xml.EndElement{Name: start.Name})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
