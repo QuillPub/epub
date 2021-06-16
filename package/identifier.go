@@ -2,6 +2,10 @@ package packagefile
 
 import "encoding/xml"
 
+// Identifier is some kind of identifier for the publication, for example a UUID
+// or a publisher's id. If the identifier comes from an established system, an
+// accompanying meta tag for the property "identifier-type" should be provided.
+// See https://www.w3.org/publishing/epub3/epub-packages.html#sec-opf-dcidentifier
 type Identifier struct {
 	// Required
 	Text string
@@ -26,7 +30,6 @@ func (identifier *Identifier) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 		switch el := token.(type) {
 		case xml.CharData:
 			identifier.Text = string(el)
-		case xml.StartElement:
 		case xml.EndElement:
 			if el == start.End() {
 				return nil
@@ -35,6 +38,7 @@ func (identifier *Identifier) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 	}
 }
 
+// MarshalXML will not write an identifier without any Text
 func (identifier Identifier) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if identifier.Text == "" {
 		return nil

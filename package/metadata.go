@@ -5,12 +5,14 @@ import (
 	"time"
 )
 
+// Metadata contains the metadata about the epub file
+// See https://www.w3.org/publishing/epub3/epub-packages.html#sec-metadata-elem
 type Metadata struct {
 	XMLName     xml.Name
-	Identifiers []Identifier `xml:"identifier"`
-	Titles      []Title      `xml:"title"`
-	Languages   []Language   `xml:"language"`
-	Metas       []Meta       `xml:"meta"`
+	Identifiers []Identifier
+	Titles      []Title
+	Languages   []Language
+	Metas       []Meta
 
 	//Optional
 	Creators     []Creator
@@ -24,7 +26,7 @@ type Metadata struct {
 	Types        []Type
 	Links        []Link
 	Sources      []Source
-	Date         Date `xml:"date,omitempty"`
+	Date         Date
 }
 
 func (metadata Metadata) elements() []interface {
@@ -207,6 +209,8 @@ func (metadata Metadata) MarshalXML(e *xml.Encoder, start xml.StartElement) erro
 
 const ISO8601Date = `2006-01-02`
 
+// Date is a Marshal/Unmarshal wrapper around time.Time
+// See https://www.w3.org/publishing/epub3/epub-packages.html#sec-opf-dcdate
 type Date struct {
 	T *time.Time
 }

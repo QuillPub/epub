@@ -2,6 +2,9 @@ package packagefile
 
 import "encoding/xml"
 
+// Title identifies a title of the document. At least one Title is required. If
+// a title and subtitle are used, meta tags should identify which is which. The
+// first Title is considered the primary title.
 type Title struct {
 	// Required
 	Text string
@@ -47,6 +50,7 @@ func (title *Title) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 }
 
+// MarshalXML will not write a Title without any Text
 func (title Title) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if title.Text == "" {
 		return nil

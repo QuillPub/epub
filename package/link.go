@@ -2,6 +2,9 @@ package packagefile
 
 import "encoding/xml"
 
+// Link represents a link to a resource either internally or externally. If
+// the resource is external, MediaType must be populated.
+// See https://www.w3.org/publishing/epub3/epub-packages.html#sec-link-elem
 type Link struct {
 	// Required
 	Href Href
@@ -36,7 +39,6 @@ func (link *Link) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		case link.Refines.Name():
 			link.Refines = Refines(attr.Value)
 		}
-
 	}
 
 	for {
@@ -54,6 +56,9 @@ func (link *Link) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 }
 
+// MarshalXML should write a self-closing tag, but the current xml implementation
+// does not support it. It may look kind of ugly, but in theory it shouldn't be
+// an issue unless a reader does not support the full xml spec.
 func (link Link) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if !link.Href.isSet() || !link.Rel.isSet() {
 		return nil
@@ -85,6 +90,7 @@ func (href Href) String() string {
 	return string(href)
 }
 
+// Name gives the xml attribute name
 func (Href) Name() string {
 	return "href"
 }
@@ -107,6 +113,7 @@ func (rel Rel) String() string {
 	return string(rel)
 }
 
+// Name gives the xml attribute name
 func (Rel) Name() string {
 	return "rel"
 }
@@ -129,6 +136,7 @@ func (mediaType MediaType) String() string {
 	return string(mediaType)
 }
 
+// Name gives the xml attribute name
 func (MediaType) Name() string {
 	return "media-type"
 }
@@ -151,6 +159,7 @@ func (properties Properties) String() string {
 	return string(properties)
 }
 
+// Name gives the xml attribute name
 func (Properties) Name() string {
 	return "properties"
 }

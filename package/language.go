@@ -4,6 +4,11 @@ import (
 	"encoding/xml"
 )
 
+// Language designates a language used in the publication. Metadata must contain
+// at least one Language. Multiple languages  may be specified in the case of
+// multilingual publication, but the first Language is considered primary. Not
+// that this does not specify the language of any child content.
+// See https://www.w3.org/publishing/epub3/epub-packages.html#sec-opf-dclanguage
 type Language struct {
 	// Required
 	Text string
@@ -28,7 +33,6 @@ func (language *Language) UnmarshalXML(d *xml.Decoder, start xml.StartElement) e
 		switch el := token.(type) {
 		case xml.CharData:
 			language.Text = string(el)
-		case xml.StartElement:
 		case xml.EndElement:
 			if el == start.End() {
 				return nil
@@ -37,6 +41,7 @@ func (language *Language) UnmarshalXML(d *xml.Decoder, start xml.StartElement) e
 	}
 }
 
+// MarshalXML will not write a language without any Text
 func (language Language) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if language.Text == "" {
 		return nil

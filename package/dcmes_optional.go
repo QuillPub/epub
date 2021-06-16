@@ -33,15 +33,20 @@ type Source struct {
 	DCMESOptionalElement
 }
 
+// DCMESOptionalElement is a template for several elements that are identical
+// except for their names. This was the best solution I could come up with.
+// See https://www.w3.org/publishing/epub3/epub-packages.html#sec-opf-dcmes-optional
 type DCMESOptionalElement struct {
-	name string
-	// Required
 	Text string
 
 	// Optional
 	ID   ID
 	Dir  TextDirection
 	Lang XMLLang
+
+	// name is the element name for the parent element and is used for
+	// marshaling and unmarshaling xml
+	name string
 }
 
 func (element DCMESOptionalElement) qualifiedName() string {
@@ -82,6 +87,7 @@ func (element *DCMESOptionalElement) UnmarshalXML(d *xml.Decoder, start xml.Star
 	}
 }
 
+// MarshalXML will not write a DCMESOptionalElement without any inner text.
 func (element DCMESOptionalElement) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if element.Text == "" {
 		return nil

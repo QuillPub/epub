@@ -7,6 +7,8 @@ import (
 	"log"
 )
 
+// Package contains all the information about the epub
+// See https://www.w3.org/publishing/epub3/epub-packages.html#sec-package-elem
 type Package struct {
 	XMLName xml.Name `xml:"package"`
 	// Required
@@ -110,7 +112,8 @@ func (pkg Package) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return nil
 }
 
-// GetPackage retrieves the package from an epub file
+// GetPackage retrieves the package from an epub file (which is a zip) and
+// parses it using ParsePackage
 func GetPackage(zipFile *zip.ReadCloser, path string) (*Package, error) {
 	file, err := openPackage(zipFile, path)
 	if err != nil {
@@ -130,6 +133,7 @@ func openPackage(zip *zip.ReadCloser, path string) (io.ReadCloser, error) {
 	return zip.Open(path)
 }
 
+// ParsePackage parses a package file into a Package.
 func ParsePackage(file io.Reader) (*Package, error) {
 	var p Package
 	decoder := xml.NewDecoder(file)
@@ -140,12 +144,14 @@ func ParsePackage(file io.Reader) (*Package, error) {
 	return &p, nil
 }
 
+// Version contains the epub standard version
 type Version string
 
 func (version Version) String() string {
 	return string(version)
 }
 
+// Name gives the xml attribute name
 func (Version) Name() string {
 	return "version"
 }
@@ -162,12 +168,14 @@ func (version Version) toAttr() xml.Attr {
 	return xml.Attr{Name: version.xmlName(), Value: version.String()}
 }
 
+// UniqueIdentifier idenitifies the primary Identifier in the metadata
 type UniqueIdentifier string
 
 func (uid UniqueIdentifier) String() string {
 	return string(uid)
 }
 
+// Name gives the xml attribute name
 func (UniqueIdentifier) Name() string {
 	return "unique-identifier"
 }
@@ -184,12 +192,14 @@ func (uid UniqueIdentifier) toAttr() xml.Attr {
 	return xml.Attr{Name: uid.xmlName(), Value: uid.String()}
 }
 
+// See https://www.w3.org/publishing/epub3/epub-packages.html#sec-prefix-attr
 type Prefix string
 
 func (prefix Prefix) String() string {
 	return string(prefix)
 }
 
+// Name gives the xml attribute name
 func (Prefix) Name() string {
 	return "prefix"
 }

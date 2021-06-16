@@ -2,10 +2,11 @@ package packagefile
 
 import "encoding/xml"
 
+// Meta contains meta information
+// See https://www.w3.org/publishing/epub3/epub-packages.html#sec-meta-elem
 type Meta struct {
-	Text string
-
 	// Required
+	Text     string
 	Property Property
 
 	//Optional
@@ -39,7 +40,7 @@ func (meta *Meta) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			meta.Scheme = Scheme(attr.Value)
 		case meta.ID.Name():
 			meta.ID = ID(attr.Value)
-		case "lang":
+		case meta.XMLLang.Name():
 			if attr.Name.Space != xmlNamespace {
 				continue
 			}
@@ -64,6 +65,7 @@ func (meta *Meta) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 }
 
+// MarshalXML will not write out a meta element without any text
 func (meta *Meta) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if meta.Text == "" {
 		return nil
@@ -93,12 +95,15 @@ func (meta *Meta) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return nil
 }
 
+// Property is the property specified by the meta tag, for example
+// "dcterms:modified" specifies the last modified date for the document.
 type Property string
 
 func (property Property) String() string {
 	return string(property)
 }
 
+// Name gives the xml attribute name
 func (Property) Name() string {
 	return "property"
 }
@@ -115,12 +120,15 @@ func (property Property) toAttr() xml.Attr {
 	return xml.Attr{Name: property.xmlName(), Value: property.String()}
 }
 
+// Refines links the meta tag to another element by specifying an element id
+// in the format "#element-id"
 type Refines string
 
 func (refines Refines) String() string {
 	return string(refines)
 }
 
+// Name gives the xml attribute name
 func (Refines) Name() string {
 	return "refines"
 }
@@ -137,12 +145,14 @@ func (refines Refines) toAttr() xml.Attr {
 	return xml.Attr{Name: refines.xmlName(), Value: refines.String()}
 }
 
+// Scheme identifies the scheme the value is drawn from
 type Scheme string
 
 func (scheme Scheme) String() string {
 	return string(scheme)
 }
 
+// Name gives the xml attribute name
 func (Scheme) Name() string {
 	return "scheme"
 }
