@@ -13,6 +13,13 @@ func TestCCSharedCulture(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	defer func() {
+		err := zip.Close()
+		if err != nil {
+			t.Errorf("close container file error: %s", err)
+		}
+	}()
+
 	pkg, err := GetPackage(zip, "EPUB/package.opf")
 	if err != nil {
 		t.Fatal(err)
