@@ -21,7 +21,7 @@ const MediaTypePackageFile = `application/oebps-package+xml`
 
 var ErrContentsPathNotFound = errors.New("contents path not found")
 
-func GetContentsPath(zip *zip.ReadCloser) (string, error) {
+func GetContentsPath(zip *zip.Reader) (string, error) {
 	file, err := zip.Open("META-INF/container.xml")
 	if err != nil {
 		return "", err
