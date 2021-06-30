@@ -20,7 +20,7 @@ func TestHaruko(t *testing.T) {
 		}
 	}()
 
-	pkg, err := GetPackage(zip, "OPS/package.opf")
+	pkg, err := GetPackage(&zip.Reader, "OPS/package.opf")
 	if err != nil {
 		t.Fatal(err)
 	}

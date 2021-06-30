@@ -114,7 +114,7 @@ func (pkg Package) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 // GetPackage retrieves the package from an epub file (which is a zip) and
 // parses it using ParsePackage
-func GetPackage(zipFile *zip.ReadCloser, path string) (*Package, error) {
+func GetPackage(zipFile *zip.Reader, path string) (*Package, error) {
 	file, err := openPackage(zipFile, path)
 	if err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func GetPackage(zipFile *zip.ReadCloser, path string) (*Package, error) {
 	return ParsePackage(file)
 }
 
-func openPackage(zip *zip.ReadCloser, path string) (io.ReadCloser, error) {
+func openPackage(zip *zip.Reader, path string) (io.ReadCloser, error) {
 	return zip.Open(path)
 }
 

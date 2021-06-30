@@ -34,7 +34,7 @@ func TestGetContentsPath(t *testing.T) {
 				}
 			}()
 
-			path, err := GetContentsPath(zip)
+			path, err := GetContentsPath(&zip.Reader)
 			if err != nil {
 				t.Error(err)
 			}
